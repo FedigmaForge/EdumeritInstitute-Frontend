@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Demo - EduMerit Institute</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="container nav-inner">
+            <a href="../index.html" class="logo">
+                <img src="../Logo/1.jpg" alt="EduMerit">
+                <span>EduMerit Institute</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="academic.html">Academic</a></li>
+                <li><a href="competitive.html">Competitive</a></li>
+                <li><a href="current-affairs.html">Current Affairs</a></li>
+                <li><a href="resources.html">Resources</a></li>                <li><a href="pages/contact.html">Contact</a></li>
+                <li><a href="quiz.html" class="active">Quiz</a></li>
+                <li><a href="../admin/login.html" class="btn-admin"><i class="fas fa-lock"></i> Login</a></li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="page-hero-inner">
+            <div class="page-hero-breadcrumb">
+                <a href="../index.html"><i class="fas fa-home"></i> Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Quiz Demo</span>
+            </div>
+            <div class="page-hero-body">
+                <div class="page-hero-icon"><i class="fas fa-question-circle"></i></div>
+                <div>
+                    <h1>Quiz Demo</h1>
+                    <p>Try sample current affairs + competitive quiz questions. Edited via Dashboard.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="course-detail-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Quiz Practice</span>
+                <h2>Live Quiz Questions</h2>
+                <div class="divider"></div>
+                <p style="color:var(--text-gray); margin-top:1rem;">Questions are loaded from admin-managed data. This is a demo interaction flow.</p>
+            </div>
+
+            <div class="quiz-player-controls" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; gap:1rem; flex-wrap:wrap;">
+                <label style="font-weight:600; color:#222;">Quiz category:
+                    <select id="quizCategorySelect" style="margin-left:0.5rem; padding:0.45rem 0.75rem; border-radius:8px; border:1px solid #ddd;">
+                        <option value="all">All</option>
+                        <option value="Academic">Academic</option>
+                        <option value="Competitive">Competitive</option>
+                        <option value="Current Affairs">Current Affairs</option>
+                    </select>
+                </label>
+                <span id="quizProgress" style="font-weight:700; color:#444;">0 / 0</span>
+            </div>
+            <div class="quiz-card" id="quizCard">
+                <h3 id="quizQuestion">Loading quiz data...</h3>
+                <div class="quiz-options" id="quizOptions"></div>
+                <div class="quiz-actions" id="quizActions" style="margin-top:1rem;"></div>
+                <p id="quizResult" style="margin-top:1rem; font-weight:600;"></p>
+                <p id="quizExplanation" style="margin-top:0.5rem; color:#555; font-style:italic;"></p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <div class="footer-logo">
+                    <img src="../Logo/1.jpg" alt="EduMerit">
+                    <span>EduMerit Institute</span>
+                </div>
+                <p>Empowering minds and shaping futures through quality education. Join thousands of successful students who achieved their dreams with EduMerit.</p>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/profile.php?id=61588608520301" target="_blank" class="fb" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/edumeritinstitute/" target="_blank" class="ig" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.youtube.com/channel/UCu2cD8WHMywQ0KlH54UnqwQ" target="_blank" class="yt" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.linkedin.com/in/edumerit-institute/" target="_blank" class="li" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="pages/about-us.html"><i class="fas fa-chevron-right"></i> About Us</a></li>
+                    <li><a href="https://www.youtube.com/channel/UCu2cD8WHMywQ0KlH54UnqwQ" target="_blank"><i class="fab fa-youtube"></i> YouTube Channel</a></li>
+                    <li><a href="pages/contact.html"><i class="fas fa-chevron-right"></i> Contact Us</a></li>
+                    <li><a href="pages/privacy-policy.html"><i class="fas fa-shield-alt"></i> Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Our Courses</h4>
+                <ul>
+                    <li><a href="competitive.html"><i class="fas fa-trophy"></i> Competitive Exams</a></li>
+                    <li><a href="ssc-exams.html"><i class="fas fa-file-alt"></i> SSC Exams</a></li>
+                    <li><a href="academic.html"><i class="fas fa-book-reader"></i> Academic (1-10)</a></li>
+                    <li><a href="current-affairs.html"><i class="fas fa-newspaper"></i> Current Affairs</a></li>
+                    <li><a href="resources.html"><i class="fas fa-download"></i> Free Resources</a></li>
+                    
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact Info</h4>
+                <ul class="footer-contact">
+                    <li><i class="fas fa-phone"></i> <span id="footerPhone">09211278818</span></li>
+                    <li><i class="fas fa-envelope"></i> <span id="footerEmail">info@edumerits.co.in</span></li>
+                    <li><i class="fas fa-map-marker-alt"></i> <span id="footerAddress">2nd Floor, ICON Nurturing Innocence, opposite to Bank of Maharashtra (Panchsheel Green), Greater Noida, UP</span></li>
+                    <li><i class="fab fa-youtube"></i> <a href="https://www.youtube.com/channel/UCu2cD8WHMywQ0KlH54UnqwQ" target="_blank" style="color:rgba(255,255,255,0.8);text-decoration:none;">YouTube Channel</a></li>
+                </ul>
+                <h4 style="margin-top:1.5rem;">Newsletter</h4>
+                <form class="newsletter-form" id="newsletterForm">
+                    <input type="email" placeholder="Your email address" required>
+                    <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom container">
+            <p>&copy; 2026 EduMerit Institute. All rights reserved.</p>
+            <p>Developed by <a href="https://fedigmaforge.com" target="_blank" style="color:#e74c3c;text-decoration:none;">Fedigma Forge</a></p>
+        </div>
+    </footer>
+
+    <button class="scroll-top" id="scrollTop"><i class="fas fa-arrow-up"></i></button>
+
+    <!-- WhatsApp Floating Button -->
+    <a href="https://wa.me/919211278818" target="_blank" class="whatsapp-float" aria-label="Contact us on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script src="../public/js/main.js"></script>
+    <script>
+        const defaultQuiz = [
+            { question: 'What is RBI Grade B exam held for?', options: ['Bank Clerk', 'Bank Manager', 'Officer Grade B', 'Security Guard'], answer: 'C', category: 'Competitive', explanation: 'RBI Grade B is for Officer Grade B posts in RBI.' },
+            { question: 'Which bank is known as the Bank of India?', options: ['SBI', 'RBI', 'IBPS', 'PNB'], answer: 'B', category: 'Academic', explanation: 'The Reserve Bank of India (RBI) is the central bank.' },
+            { question: 'Which year was EduMerit Institute established?', options: ['2010', '2015', '2020', '2022'], answer: 'A', category: 'General', explanation: 'Default example data.' }
+        ];
+
+        let quizData = [];
+        let currentIndex = 0;
+        let score = 0;
+        let selectedCategory = 'all';
+
+        function getQuizSource() {
+            let source = defaultQuiz;
+            if (window.edumeritData && Array.isArray(window.edumeritData.quiz)) {
+                source = window.edumeritData.quiz;
+            }
+            const stored = localStorage.getItem('edumeritContent');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    if (parsed.quiz && parsed.quiz.length) source = parsed.quiz;
+                } catch (e) {
+                    console.warn('local quiz parse failed');
+                }
+            }
+            return source;
+        }
+
+        function applyCategoryFilter() {
+            const category = selectedCategory;
+            const source = getQuizSource();
+            if (!source || !source.length) {
+                quizData = [];
+                return;
+            }
+            if (category === 'all') {
+                quizData = source;
+            } else {
+                quizData = source.filter(q => (q.category || 'General').toLowerCase() === category.toLowerCase());
+            }
+            currentIndex = 0;
+            score = 0;
+            updateProgress();
+            renderQuestion();
+        }
+
+        function updateProgress() {
+            const progress = document.getElementById('quizProgress');
+            if (progress) {
+                progress.textContent = `${quizData.length ? currentIndex + 1 : 0} / ${quizData.length}`;
+            }
+        }
+
+        function renderQuestion() {
+            const quizQuestion = document.getElementById('quizQuestion');
+            const quizOptions = document.getElementById('quizOptions');
+            const quizActions = document.getElementById('quizActions');
+            const quizResult = document.getElementById('quizResult');
+            const quizExplanation = document.getElementById('quizExplanation');
+
+            if (!quizData.length) {
+                if (quizQuestion) quizQuestion.textContent = 'No quiz questions available. Add questions in admin dashboard.';
+                if (quizOptions) quizOptions.innerHTML = '';
+                if (quizActions) quizActions.innerHTML = '';
+                if (quizResult) quizResult.textContent = '';
+                if (quizExplanation) quizExplanation.textContent = '';
+                document.getElementById('quizProgress').textContent = '0 / 0';
+                return;
+            }
+
+            const item = quizData[currentIndex];
+            if (quizQuestion) quizQuestion.textContent = `${currentIndex + 1}. ${item.question}`;
+            if (quizOptions) {
+                quizOptions.innerHTML = item.options.map((opt, idx) => `
+                    <label class="quiz-opt">
+                        <input type="radio" name="quizOption" value="${String.fromCharCode(65 + idx)}"> ${opt}
+                    </label>
+                `).join('');
+            }
+            if (quizActions) quizActions.innerHTML = `<button class="btn-primary" id="quizSubmit">Submit Answer</button>`;
+            if (quizResult) quizResult.textContent = '';
+            if (quizExplanation) quizExplanation.textContent = '';
+            updateProgress();
+
+            document.getElementById('quizSubmit')?.addEventListener('click', () => {
+                const selected = document.querySelector('input[name="quizOption"]:checked');
+                if (!selected) {
+                    if (quizResult) {
+                        quizResult.textContent = 'Select an option first.';
+                        quizResult.style.color = '#e67e22';
+                    }
+                    return;
+                }
+
+                const userAnswer = selected.value;
+                const correctAnswer = (item.answer || '').toUpperCase();
+
+                if (userAnswer === correctAnswer) {
+                    score += 1;
+                    if (quizResult) {
+                        quizResult.textContent = 'Correct answer! ✅';
+                        quizResult.style.color = '#2ecc71';
+                    }
+                } else {
+                    if (quizResult) {
+                        quizResult.textContent = `Incorrect. Correct answer is ${correctAnswer} (${item.options[correctAnswer.charCodeAt(0) - 65] || ''}).`;
+                        quizResult.style.color = '#e74c3c';
+                    }
+                }
+
+                if (quizExplanation) {
+                    quizExplanation.textContent = item.explanation ? `Explanation: ${item.explanation}` : 'Review more content in the Academic or Competitive section for detailed insights.';
+                }
+
+                if (quizActions) {
+                    quizActions.innerHTML = `<button class="btn-primary" id="nextQuiz">${currentIndex + 1 < quizData.length ? 'Next Question' : 'See Results'}</button>`;
+                    document.getElementById('nextQuiz').addEventListener('click', () => {
+                        if (currentIndex + 1 < quizData.length) {
+                            currentIndex += 1;
+                            renderQuestion();
+                        } else {
+                            showResults();
+                        }
+                    });
+                }
+            });
+        }
+
+        function showResults() {
+            const quizQuestion = document.getElementById('quizQuestion');
+            const quizOptions = document.getElementById('quizOptions');
+            const quizActions = document.getElementById('quizActions');
+            const quizResult = document.getElementById('quizResult');
+
+            if (quizQuestion) quizQuestion.textContent = `Quiz Complete! Score: ${score} / ${quizData.length}`;
+            if (quizOptions) quizOptions.innerHTML = '';
+            if (quizResult) quizResult.textContent = `You nailed ${Math.round((score / quizData.length) * 100)}%`;
+            if (quizActions) quizActions.innerHTML = `<button class="btn-primary" id="restartQuiz">Restart Quiz</button>`;
+            document.getElementById('restartQuiz')?.addEventListener('click', () => {
+                score = 0;
+                currentIndex = 0;
+                applyCategoryFilter();
+            });
+            document.getElementById('quizProgress').textContent = `${quizData.length} / ${quizData.length}`;
+        }
+
+        function loadQuiz() {
+            if (!window.edumeritData) {
+                setTimeout(loadQuiz, 100);
+                return;
+            }
+
+            document.getElementById('quizCategorySelect')?.addEventListener('change', (event) => {
+                selectedCategory = event.target.value;
+                applyCategoryFilter();
+            });
+
+            selectedCategory = 'all';
+            applyCategoryFilter();
+        }
+
+        window.addEventListener('DOMContentLoaded', loadQuiz);
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
