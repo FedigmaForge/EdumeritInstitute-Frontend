@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Headlines - EduMerit Institute</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .hl-wrap { max-width: 1000px; margin: 0 auto; }
+
+        /* Blue banner */
+        .hl-banner {
+            background: #0b5ca8;
+            color: #fff;
+            padding: 22px 28px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+        .hl-banner h2 { margin: 0; font-size: 2rem; font-weight: 800; color: #fff; }
+
+        .hl-toolbar { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin-bottom:1.25rem; }
+        .hl-toolbar select { margin-left:.5rem; padding:.45rem .75rem; border-radius:8px; border:1px solid #ddd; font-size:.95rem; }
+
+        /* Accordion card */
+        .hl-card { margin-bottom: 26px; }
+
+        .hl-head {
+            background: #eaf3fb;
+            border: 1px solid #cfe2f5;
+            border-radius: 10px;
+            padding: 16px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+            transition: background .15s;
+        }
+        .hl-head:hover { background: #dceafb; }
+        .hl-head-title { color: #0b5ca8; font-weight: 700; font-size: 1.2rem; }
+        .hl-chevron { color: #0b5ca8; font-size: 1rem; transition: transform .2s; }
+        .hl-card.open .hl-chevron { transform: rotate(180deg); }
+
+        /* Body box (offset like the mockup) */
+        .hl-box {
+            border: 1px solid #d7dde3;
+            border-radius: 10px;
+            background: #fff;
+            margin: -2px 28px 0 14px;
+            padding: 16px 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .hl-preview { color: #222; font-size: 1rem; }
+
+        /* Expanded content */
+        .hl-full { display: none; }
+        .hl-card.open .hl-full { display: block; }
+
+        .hl-list { margin: 0; padding-left: 0; list-style: none; }
+        .hl-list li {
+            position: relative; padding: 11px 0 11px 28px; font-size: 1rem; line-height: 1.55;
+            border-bottom: 1px solid #f0f0f0; color: #222;
+        }
+        .hl-list li:last-child { border-bottom: none; }
+        .hl-list li::before {
+            content: "\f0a4"; font-family: "Font Awesome 6 Free"; font-weight: 900;
+            position: absolute; left: 0; top: 12px; color: #0b5ca8; font-size: .8rem;
+        }
+
+        .hl-video { margin-top: 16px; width: 300px; max-width: 100%; aspect-ratio: 9/16; max-height: 460px; background:#000; border-radius:10px; overflow:hidden; }
+        .hl-video iframe { width:100%; height:100%; border:0; display:block; }
+
+        .hl-watch {
+            display:inline-flex; align-items:center; gap:6px; margin-top:14px;
+            padding:8px 16px; background:#fff5f5; border:1.5px solid #ff0000; color:#cc0000;
+            border-radius:8px; text-decoration:none; font-size:.9rem; font-weight:600;
+        }
+        .hl-state { text-align:center; padding:60px 20px; color:#6c757d; }
+        .hl-state i { font-size:48px; margin-bottom:12px; display:block; }
+        @media (max-width:640px){ .hl-box { margin: -2px 8px 0 8px; } .hl-video { width:100%; aspect-ratio:16/9; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="container nav-inner">
+            <a href="../index.html" class="logo">
+                <img src="../Logo/1.jpg" alt="EduMerit">
+                <span>EduMerit Institute</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="academic.html">Academic</a></li>
+                <li><a href="competitive.html">Competitive</a></li>
+                <li><a href="current-affairs.html">Current Affairs</a></li>
+                <li><a href="daily-headlines.html" class="active">Daily Headlines</a></li>
+                <li><a href="resources.html">Resources</a></li>
+                <li><a href="quiz.html">Quiz</a></li>
+                <li><a href="../admin/login.html" class="btn-admin"><i class="fas fa-lock"></i> Login</a></li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="page-hero-inner">
+            <div class="page-hero-breadcrumb">
+                <a href="../index.html"><i class="fas fa-home"></i> Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Daily Headlines</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="course-detail-section">
+        <div class="container">
+            <div class="hl-wrap">
+                <div class="hl-banner">
+                    <h2>Headlines of the Day</h2>
+                </div>
+
+                <div class="hl-toolbar">
+                    <label style="font-weight:600; color:#222;">Date:
+                        <select id="hlDateSelect"><option value="all">All</option></select>
+                    </label>
+                    <span id="hlCount" style="font-weight:700; color:#444;"></span>
+                </div>
+
+                <div id="hlGrid">
+                    <div class="hl-state"><i class="fas fa-spinner fa-spin"></i><p>Loading headlines…</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <div class="footer-logo">
+                    <img src="../Logo/1.jpg" alt="EduMerit">
+                    <span>EduMerit Institute</span>
+                </div>
+                <p>Empowering minds and shaping futures through quality education.</p>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/profile.php?id=61588608520301" target="_blank" class="fb" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/edumeritinstitute/" target="_blank" class="ig" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.youtube.com/channel/UCu2cD8WHMywQ0KlH54UnqwQ" target="_blank" class="yt" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.linkedin.com/in/edumerit-institute/" target="_blank" class="li" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="/pages/about-us.html"><i class="fas fa-chevron-right"></i> About Us</a></li>
+                    <li><a href="quiz.html"><i class="fas fa-chevron-right"></i> Quiz</a></li>
+                    <li><a href="/pages/contact.html"><i class="fas fa-chevron-right"></i> Contact Us</a></li>
+                    <li><a href="/pages/privacy-policy.html"><i class="fas fa-shield-alt"></i> Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Our Courses</h4>
+                <ul>
+                    <li><a href="competitive.html"><i class="fas fa-trophy"></i> Competitive Exams</a></li>
+                    <li><a href="academic.html"><i class="fas fa-book-reader"></i> Academic (1-10)</a></li>
+                    <li><a href="current-affairs.html"><i class="fas fa-newspaper"></i> Current Affairs</a></li>
+                    <li><a href="resources.html"><i class="fas fa-download"></i> Free Resources</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact Info</h4>
+                <ul class="footer-contact">
+                    <li><i class="fas fa-phone"></i> <span>09211278818</span></li>
+                    <li><i class="fas fa-envelope"></i> <span>info@edumerits.co.in</span></li>
+                    <li><i class="fab fa-youtube"></i> <a href="https://www.youtube.com/channel/UCu2cD8WHMywQ0KlH54UnqwQ" target="_blank" style="color:rgba(255,255,255,0.8);text-decoration:none;">YouTube Channel</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom container">
+            <p>&copy; 2026 EduMerit Institute. All rights reserved.</p>
+            <p>Developed by <a href="https://fedigmaforge.com" target="_blank" style="color:#e74c3c;text-decoration:none;">Fedigma Forge</a></p>
+        </div>
+    </footer>
+
+    <button class="scroll-top" id="scrollTop"><i class="fas fa-arrow-up"></i></button>
+    <a href="https://wa.me/919211278818" target="_blank" class="whatsapp-float" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+
+    <script src="../public/js/main.js"></script>
+    <script>
+        const API_BASE = (window.API_BASE || "https://api.edumerits.in/api/admin").replace(/\/$/, "");
+        const ENDPOINT = "/api/admin/headlines/all";
+
+        let allEntries = [];
+        let selectedDate = "all";
+
+        const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+        const escapeHtml = (s) =>
+            String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+
+        const getYouTubeId = (url) => {
+            if (!url) return null;
+            const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/))([a-zA-Z0-9_-]{11})/);
+            return m ? m[1] : null;
+        };
+
+        const toHeadlines = (content) =>
+            String(content || "").split("\n").map((l) => l.trim()).filter(Boolean);
+
+        // Format -> "10-June-2026"
+        const fmtDate = (d) => {
+            if (!d) return "";
+            const date = new Date(d);
+            if (Number.isNaN(date.getTime())) return d;
+            const dd = String(date.getDate()).padStart(2, "0");
+            return `${dd}-${MONTHS[date.getMonth()]}-${date.getFullYear()}`;
+        };
+
+        async function load() {
+            try {
+                const res = await fetch(`${API_BASE}${ENDPOINT}`);
+                const data = await res.json();
+                allEntries = (res.ok && data.success && Array.isArray(data.headlines)) ? data.headlines : [];
+            } catch (err) {
+                console.error("Failed to load headlines:", err);
+                document.getElementById("hlGrid").innerHTML =
+                    '<div class="hl-state"><i class="fas fa-triangle-exclamation" style="color:#dc3545;"></i><p>Couldn\'t load headlines right now.</p></div>';
+                return;
+            }
+            buildDateOptions();
+            render();
+        }
+
+        function buildDateOptions() {
+            const select = document.getElementById("hlDateSelect");
+            const dates = [...new Set(allEntries.map((e) => (e.date || "").slice(0,10)).filter(Boolean))];
+            select.innerHTML = '<option value="all">All</option>' +
+                dates.map((d) => `<option value="${escapeHtml(d)}">${escapeHtml(fmtDate(d))}</option>`).join("");
+            select.addEventListener("change", (e) => { selectedDate = e.target.value; render(); });
+        }
+
+        function render() {
+            const grid = document.getElementById("hlGrid");
+            const count = document.getElementById("hlCount");
+            const list = selectedDate === "all"
+                ? allEntries
+                : allEntries.filter((e) => (e.date || "").slice(0,10) === selectedDate);
+
+            count.textContent = `${list.length} day${list.length === 1 ? "" : "s"}`;
+
+            if (!list.length) {
+                grid.innerHTML = '<div class="hl-state"><i class="fas fa-bullhorn"></i><p>No headlines available yet.</p></div>';
+                return;
+            }
+
+            grid.innerHTML = list.map((e, idx) => {
+                const ytId = getYouTubeId(e.youtubeUrl);
+                const lines = toHeadlines(e.content);
+                const dateLabel = fmtDate(e.date);
+                const preview = lines[0] ? escapeHtml(lines[0]) : "No headlines";
+                const moreCount = lines.length > 1 ? ` <span style="color:#0b5ca8; font-weight:600;">+${lines.length - 1} more</span>` : "";
+
+                const video = ytId
+                    ? `<div class="hl-video"><iframe src="https://www.youtube.com/embed/${ytId}" title="Shorts" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`
+                    : "";
+
+                // First card open by default
+                const openClass = idx === 0 ? " open" : "";
+
+                return `
+                    <div class="hl-card${openClass}" data-card>
+                        <div class="hl-head" data-toggle>
+                            <span class="hl-head-title">Headlines of the Day ${escapeHtml(dateLabel)}</span>
+                            <i class="fas fa-chevron-down hl-chevron"></i>
+                        </div>
+                        <div class="hl-box">
+                            <div class="hl-preview" data-preview>${preview}${moreCount}</div>
+                            <div class="hl-full">
+                                <ul class="hl-list">
+                                    ${lines.map((l) => `<li>${escapeHtml(l)}</li>`).join("")}
+                                </ul>
+                                ${video}
+                                ${ytId ? `<div><a class="hl-watch" href="${escapeHtml(e.youtubeUrl)}" target="_blank" rel="noreferrer"><i class="fab fa-youtube"></i> Watch on YouTube</a></div>` : ""}
+                            </div>
+                        </div>
+                    </div>`;
+            }).join("");
+
+            // Toggle: clicking the header expands/collapses; hide preview when open
+            grid.querySelectorAll("[data-card]").forEach((card) => {
+                const head = card.querySelector("[data-toggle]");
+                const preview = card.querySelector("[data-preview]");
+                const sync = () => { preview.style.display = card.classList.contains("open") ? "none" : "block"; };
+                sync();
+                head.addEventListener("click", () => { card.classList.toggle("open"); sync(); });
+            });
+        }
+
+        window.addEventListener("DOMContentLoaded", load);
+    </script>
+</body>
+</html>
