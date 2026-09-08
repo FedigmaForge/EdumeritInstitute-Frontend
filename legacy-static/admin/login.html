@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - EduMerit</title>
+    <link rel="stylesheet" href="../public/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <img src="../Logo/1.jpg" alt="EduMerit" class="login-logo">
+                <h1>Admin Login</h1>
+                <p>Enter your credentials to access dashboard</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Username</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="username" placeholder="Enter username" required>
+                        <button type="button" class="toggle-visibility" onclick="showCredentials()">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" placeholder="Enter password" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword()">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> Login to Dashboard
+                </button>
+                <div id="error" class="error"></div>
+            </form>
+            <div class="login-footer">
+                <p><i class="fas fa-info-circle"></i> Default Credentials:</p>
+                <div class="credentials-info">
+                    <span><strong>Username:</strong> EduMerit2026</span>
+                    <span><strong>Password:</strong> Wegrow@2026</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleBtn = document.querySelector('.toggle-password i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.classList.remove('fa-eye');
+                toggleBtn.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.classList.remove('fa-eye-slash');
+                toggleBtn.classList.add('fa-eye');
+            }
+        }
+
+        function showCredentials() {
+            document.getElementById('username').value = 'EduMerit2026';
+            document.getElementById('password').value = 'Wegrow@2026';
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const error = document.getElementById('error');
+
+            if (username === 'EduMerit2026' && password === 'Wegrow@2026') {
+                sessionStorage.setItem('adminAuth', 'true');
+                error.style.display = 'none';
+                window.location.href = 'dashboard.html';
+            } else {
+                error.textContent = 'Invalid credentials! Please try again.';
+                error.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

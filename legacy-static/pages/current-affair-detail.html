@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current Affair Detail - EduMerit Institute</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .detail-wrapper {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 2rem 20px 4rem;
+        }
+
+        .detail-back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #0a1f44;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            padding: 8px 16px;
+            border: 2px solid #0a1f44;
+            border-radius: 30px;
+            transition: all 0.2s;
+        }
+        .detail-back-btn:hover {
+            background: #0a1f44;
+            color: white;
+        }
+
+        .detail-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(10,31,68,0.1);
+            padding: 2.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .detail-date-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .detail-date {
+            background: #0a1f44;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .detail-title {
+            font-size: 1.6rem;
+            color: #0a1f44;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.4;
+        }
+
+        .detail-video-container {
+            margin: 1.5rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            background: #000;
+        }
+
+        .detail-video-container iframe {
+            width: 100%;
+            height: 420px;
+            display: block;
+            border: none;
+        }
+
+        .detail-content {
+            margin-top: 1.5rem;
+            line-height: 1.8;
+            color: #334155;
+            font-size: 1rem;
+        }
+
+        .detail-content h1,
+        .detail-content h2,
+        .detail-content h3,
+        .detail-content h4 {
+            color: #0a1f44;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        .detail-content h1 { font-size: 1.4rem; }
+        .detail-content h2 { font-size: 1.3rem; }
+        .detail-content h3 { font-size: 1.15rem; }
+        .detail-content h4 { font-size: 1rem; }
+
+        .detail-content p { margin-bottom: 0.9rem; }
+
+        .detail-content ul,
+        .detail-content ol {
+            margin: 0.5rem 0 1rem 1.5rem;
+        }
+        .detail-content li { margin: 0.4rem 0; }
+
+        .detail-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.25rem 0;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            display: block;
+        }
+        .detail-content td,
+        .detail-content th {
+            border: 1px solid #cbd5e1;
+            padding: 10px 14px;
+            text-align: left;
+        }
+        .detail-content th {
+            background: #f1f5f9;
+            font-weight: 600;
+            color: #0a1f44;
+        }
+        .detail-content tr:hover td { background: #f8fafc; }
+
+        .detail-content hr {
+            margin: 1.5rem 0;
+            border: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #e2e8f0, #94a3b8, #e2e8f0);
+        }
+
+        .detail-content b,
+        .detail-content strong { color: #0a1f44; }
+
+        .detail-content blockquote {
+            border-left: 4px solid #0a1f44;
+            padding: 0.75rem 1rem;
+            background: #f0f4ff;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+            font-style: italic;
+        }
+
+        .detail-footer-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .loading-state, .error-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #0a1f44;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 768px) {
+            .detail-card { padding: 1.5rem; }
+            .detail-title { font-size: 1.3rem; }
+            .detail-video-container iframe { height: 240px; }
+            .detail-content { font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-inner">
+            <a href="../index.html" class="logo">
+                <img src="../Logo/1.jpg" alt="EduMerit">
+                <span>EduMerit Institute</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="bank-exams.html">Bank Exams</a></li>
+                <li><a href="ssc-exams.html">SSC Exams</a></li>
+                <li><a href="academic.html">Academic</a></li>
+                <li><a href="resources.html">Resources</a></li>
+                <li><a href="../admin/login.html" class="btn-admin"><i class="fas fa-lock"></i> Login</a></li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="page-hero-inner">
+            <div class="page-hero-breadcrumb">
+                <a href="../index.html"><i class="fas fa-home"></i> Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="current-affairs.html">Current Affairs</a>
+                <i class="fas fa-chevron-right"></i>
+                <span id="breadcrumbTitle">Detail</span>
+            </div>
+            <div class="page-hero-body">
+                <div class="page-hero-icon"><i class="fas fa-book-open"></i></div>
+                <div>
+                    <h1 id="heroTitle">Current Affair Detail</h1>
+                    <p>Full detailed coverage for your exam preparation</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 2.5rem 0;">
+        <div class="container">
+            <div class="detail-wrapper">
+
+                <a href="current-affairs.html" class="detail-back-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Current Affairs
+                </a>
+
+                <div id="detailContent">
+                    <div class="loading-state">
+                        <div class="spinner"></div>
+                        <p>Loading current affair...</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <div class="footer-logo">
+                    <img src="../Logo/1.jpg" alt="EduMerit">
+                    <span>EduMerit Institute</span>
+                </div>
+                <p>Empowering minds and shaping futures through quality education.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="../index.html"><i class="fas fa-chevron-right"></i> Home</a></li>
+                    <li><a href="bank-exams.html"><i class="fas fa-chevron-right"></i> Bank Exams</a></li>
+                    <li><a href="ssc-exams.html"><i class="fas fa-chevron-right"></i> SSC Exams</a></li>
+                    <li><a href="academic.html"><i class="fas fa-chevron-right"></i> Academic</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <ul class="footer-contact">
+                    <li><i class="fas fa-phone"></i> +91 9211278818</li>
+                    <li><i class="fas fa-envelope"></i> info@edumerits.co.in</li>
+                    <li><i class="fas fa-map-marker-alt"></i> 2nd Floor, ICON Nurturing Innocence, opposite to Bank of Maharashtra (Panchsheel Green), Greater Noida, UP.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; 2026 EduMerit Institute. All rights reserved.</p>
+                <p>Developed by <a href="https://fedigmaforge.com/" target="_blank" style="color:rgba(255,255,255,0.8);text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.8)'">Fedigma Forge</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../public/js/main.js"></script>
+    <script>
+        const API_BASE = 'https://api.edumerits.in/api/admin/current-affairs';
+
+        function getYouTubeEmbedUrl(url) {
+            if (!url) return null;
+            let videoId = null;
+            if (url.includes('youtu.be/')) { const m = url.match(/youtu\.be\/([^?]+)/); if (m) videoId = m[1]; }
+            else if (url.includes('youtube.com/watch')) { const m = url.match(/[?&]v=([^&]+)/); if (m) videoId = m[1]; }
+            else if (url.includes('youtube.com/embed/')) { const m = url.match(/embed\/([^?]+)/); if (m) videoId = m[1]; }
+            return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=0&controls=1&rel=0&modestbranding=1&fs=1` : null;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return dateString;
+                return date.toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
+            } catch(e) { return dateString; }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+        }
+
+        async function loadAffairDetail() {
+            const params  = new URLSearchParams(window.location.search);
+            const id      = params.get('id');
+            const wrapper = document.getElementById('detailContent');
+
+            if (!id) {
+                wrapper.innerHTML = `<div class="error-state"><i class="fas fa-exclamation-circle" style="font-size:3rem;color:#dc2626;"></i><h3>No affair ID provided.</h3><a href="current-affairs.html" class="detail-back-btn" style="display:inline-flex;margin-top:1rem;"><i class="fas fa-arrow-left"></i> Back to list</a></div>`;
+                return;
+            }
+
+            try {
+                const controller = new AbortController();
+                const tid = setTimeout(() => controller.abort(), 15000);
+                const res = await fetch(`${API_BASE}/${id}`, { headers: { 'Accept': 'application/json' }, signal: controller.signal });
+                clearTimeout(tid);
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                const data = await res.json();
+                if (!data || data.success !== true || !data.affair) throw new Error('Invalid API response');
+
+                const affair     = data.affair;
+                const title      = affair.title      || 'Current Affair';
+                const content    = affair.content    || '<p>No content available.</p>';
+                const youtubeUrl = affair.youtube_url || null;
+                const dateStr    = formatDate(affair.date || affair.created_at);
+                const updatedStr = affair.updated_at ? formatDate(affair.updated_at) : null;
+
+                // Update page title and breadcrumb
+                document.title = title + ' - EduMerit Institute';
+                const shortTitle = title.length > 50 ? title.substring(0, 50) + '...' : title;
+                document.getElementById('heroTitle').textContent    = shortTitle;
+                document.getElementById('breadcrumbTitle').textContent = shortTitle;
+
+                // YouTube
+                let videoHtml = '';
+                if (youtubeUrl) {
+                    const embedUrl = getYouTubeEmbedUrl(youtubeUrl);
+                    videoHtml = embedUrl
+                        ? `<div class="detail-video-container"><iframe src="${embedUrl}" title="${escapeHtml(title)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`
+                        : `<a href="${youtubeUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;background:#ff0000;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;margin:1rem 0;"><i class="fab fa-youtube"></i> Watch on YouTube</a>`;
+                }
+
+                // Build the detail card shell
+                wrapper.innerHTML = `
+                    <div class="detail-card">
+                        <div class="detail-date-row">
+                            <span class="detail-date"><i class="far fa-calendar-alt"></i> ${dateStr}</span>
+                            ${youtubeUrl ? '<span style="background:#ff0000;color:white;padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:600;"><i class="fab fa-youtube"></i> Video Available</span>' : ''}
+                            ${updatedStr ? `<span style="color:#6c757d;font-size:0.82rem;"><i class="fas fa-sync-alt"></i> Updated: ${updatedStr}</span>` : ''}
+                        </div>
+
+                        <h2 class="detail-title">${escapeHtml(title)}</h2>
+
+                        ${videoHtml}
+
+                        <div id="fullContent" class="detail-content">
+                            <!-- content injected below -->
+                        </div>
+
+                        <div class="detail-footer-actions">
+                            <a href="current-affairs.html" class="detail-back-btn">
+                                <i class="fas fa-arrow-left"></i> Back to list
+                            </a>
+                            <a href="#" class="btn-download" onclick="alert('PDF download coming soon.'); return false;">
+                                <i class="fas fa-download"></i> Download PDF
+                            </a>
+                            <button onclick="shareLink()" style="background:none;border:1px solid #cbd5e1;padding:8px 16px;border-radius:30px;cursor:pointer;font-size:0.85rem;">
+                                <i class="fas fa-share-alt"></i> Share
+                            </button>
+                        </div>
+                    </div>`;
+
+                // Inject rich content safely AFTER shell is in the DOM
+                document.getElementById('fullContent').innerHTML = content;
+
+            } catch (error) {
+                console.error('Detail fetch error:', error);
+                let msg = 'Unable to load this current affair.';
+                if (error.name === 'AbortError') msg = 'Request timed out. Please try again.';
+                wrapper.innerHTML = `<div class="error-state"><i class="fas fa-exclamation-triangle" style="font-size:3rem;color:#dc2626;margin-bottom:1rem;display:block;"></i><h3>${msg}</h3><a href="current-affairs.html" class="detail-back-btn" style="display:inline-flex;margin-top:1rem;"><i class="fas fa-arrow-left"></i> Back to list</a></div>`;
+            }
+        }
+
+        window.shareLink = function() {
+            navigator.clipboard.writeText(window.location.href)
+                .then(() => alert('Link copied to clipboard!'))
+                .catch(() => alert('Copy this URL: ' + window.location.href));
+        };
+
+        document.addEventListener('DOMContentLoaded', loadAffairDetail);
+    </script>
+</body>
+</html>

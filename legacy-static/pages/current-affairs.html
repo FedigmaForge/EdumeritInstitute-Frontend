@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current Affairs - EduMerit Institute</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .affair-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .affair-card:hover { transform: translateY(-5px); box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15); }
+        .affair-video-container { margin: 20px 0; border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .affair-video-container iframe { width: 100%; height: 220px; display: block; border: none; }
+        .affair-youtube { display: inline-flex; align-items: center; gap: 10px; background: #ff0000; color: white; padding: 8px 18px; border-radius: 40px; text-decoration: none; font-weight: 600; font-size: 0.85rem; margin-top: 15px; transition: all 0.2s ease; }
+        .affair-youtube:hover { background: #cc0000; color: white; }
+        .affair-content-preview { margin-top: 12px; line-height: 1.6; color: #334155; font-size: 0.95rem; }
+        .loading-card, .error-card { text-align: center; padding: 3rem; background: white; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); grid-column: 1 / -1; }
+        .spinner { width: 50px; height: 50px; border: 4px solid #e2e8f0; border-top-color: #2b4f8c; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .api-badge { background: #10b981; color: white; font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; margin-left: 10px; vertical-align: middle; }
+        .affairs-count-badge { background: #e2e8f0; color: #475569; font-size: 0.8rem; padding: 4px 12px; border-radius: 20px; font-weight: 600; margin-left: 8px; }
+        .affairs-section-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; }
+        .affairs-section-header h2 { display: flex; align-items: center; gap: 0.75rem; margin: 0; }
+        .btn-full-content { display: inline-flex; align-items: center; gap: 6px; background: #0a1f44; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; border: none; cursor: pointer; }
+        .btn-full-content:hover { background: #1a3a6e; color: white; transform: translateY(-1px); }
+        @media (max-width: 768px) { .affair-video-container iframe { height: 200px; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-inner">
+            <a href="../index.html" class="logo">
+                <img src="../Logo/1.jpg" alt="EduMerit">
+                <span>EduMerit Institute</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="bank-exams.html">Bank Exams</a></li>
+                <li><a href="ssc-exams.html">SSC Exams</a></li>
+                <li><a href="academic.html">Academic</a></li>
+                <li><a href="resources.html">Resources</a></li>
+                <li><a href="../admin/login.html" class="btn-admin"><i class="fas fa-lock"></i> Login</a></li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="page-hero-inner">
+            <div class="page-hero-breadcrumb">
+                <a href="../index.html"><i class="fas fa-home"></i> Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Current Affairs</span>
+            </div>
+            <div class="page-hero-body">
+                <div class="page-hero-icon"><i class="fas fa-newspaper"></i></div>
+                <div>
+                    <h1>Current Affairs</h1>
+                    <p>Stay updated with daily, weekly &amp; monthly current affairs for all competitive exams</p>
+                </div>
+            </div>
+            <div class="page-hero-stats">
+                <span class="hero-stat-pill"><i class="fas fa-calendar-day"></i> Daily Updates</span>
+                <span class="hero-stat-pill"><i class="fas fa-calendar-week"></i> Weekly Digest</span>
+                <span class="hero-stat-pill"><i class="fas fa-calendar-alt"></i> Monthly Compilation</span>
+                <span class="hero-stat-pill"><i class="fas fa-download"></i> Free PDF Downloads</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="affairs-page-section">
+        <div class="container">
+            <div class="affairs-content">
+                <div class="affairs-section-header">
+                    <h2>
+                        <i class="fas fa-newspaper"></i>
+                        Current Affairs
+                        <span class="api-badge"><i class="fas fa-sync-alt"></i> Live</span>
+                        <span class="affairs-count-badge" id="affairsCount" style="display:none;"></span>
+                    </h2>
+                    <button onclick="refreshAffairs()"
+                        style="background:#0a1f44;color:white;border:none;padding:8px 18px;border-radius:30px;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;gap:6px;">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+                <div class="affairs-grid" id="affairsGrid">
+                    <div class="loading-card">
+                        <div class="spinner"></div>
+                        <p>Fetching latest current affairs from server...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <div class="footer-logo">
+                    <img src="../Logo/1.jpg" alt="EduMerit">
+                    <span>EduMerit Institute</span>
+                </div>
+                <p>Empowering minds and shaping futures through quality education.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="../index.html"><i class="fas fa-chevron-right"></i> Home</a></li>
+                    <li><a href="bank-exams.html"><i class="fas fa-chevron-right"></i> Bank Exams</a></li>
+                    <li><a href="ssc-exams.html"><i class="fas fa-chevron-right"></i> SSC Exams</a></li>
+                    <li><a href="academic.html"><i class="fas fa-chevron-right"></i> Academic</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <ul class="footer-contact">
+                    <li><i class="fas fa-phone"></i> +91 9211278818</li>
+                    <li><i class="fas fa-envelope"></i> info@edumerits.co.in</li>
+                    <li><i class="fas fa-map-marker-alt"></i> 2nd Floor, ICON Nurturing Innocence, opposite to Bank of Maharashtra (Panchsheel Green), Greater Noida, UP.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; 2026 EduMerit Institute. All rights reserved.</p>
+                <p>Developed by <a href="https://fedigmaforge.com/" target="_blank" style="color:rgba(255,255,255,0.8);text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.8)'">Fedigma Forge</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../public/js/main.js"></script>
+    <script>
+        const API_URL = 'https://api.edumerits.in/api/admin/current-affairs';
+
+        function getYouTubeEmbedUrl(url) {
+            if (!url) return null;
+            let videoId = null;
+            if (url.includes('youtu.be/')) { const m = url.match(/youtu\.be\/([^?]+)/); if (m) videoId = m[1]; }
+            else if (url.includes('youtube.com/watch')) { const m = url.match(/[?&]v=([^&]+)/); if (m) videoId = m[1]; }
+            else if (url.includes('youtube.com/embed/')) { const m = url.match(/embed\/([^?]+)/); if (m) videoId = m[1]; }
+            return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=0&controls=1&rel=0&modestbranding=1&fs=1` : null;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Date not available';
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return dateString;
+                return date.toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
+            } catch(e) { return dateString; }
+        }
+
+        function getTextPreview(htmlContent) {
+            if (!htmlContent) return 'No content available';
+            const div = document.createElement('div');
+            div.innerHTML = htmlContent;
+            const text = (div.textContent || div.innerText || '').trim();
+            return text.substring(0, 200) + (text.length > 200 ? '...' : '');
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+        }
+
+        window.copyAffairLink = function(id) {
+            const url = window.location.origin + window.location.pathname + '?affair=' + id;
+            navigator.clipboard.writeText(url)
+                .then(() => alert('Link copied to clipboard!'))
+                .catch(() => alert('Copy this URL: ' + url));
+        };
+
+        async function fetchCurrentAffairs() {
+            const grid  = document.getElementById('affairsGrid');
+            const count = document.getElementById('affairsCount');
+            if (!grid) return;
+
+            grid.innerHTML = `<div class="loading-card"><div class="spinner"></div><p>Fetching latest current affairs...</p></div>`;
+            count.style.display = 'none';
+
+            try {
+                const controller = new AbortController();
+                const tid = setTimeout(() => controller.abort(), 15000);
+                const res = await fetch(API_URL, { headers: { 'Accept': 'application/json' }, signal: controller.signal });
+                clearTimeout(tid);
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                const data = await res.json();
+                if (!data || data.success !== true || !Array.isArray(data.affairs)) throw new Error('Invalid API response structure');
+
+                const affairs = data.affairs;
+
+                if (affairs.length === 0) {
+                    grid.innerHTML = `<div class="error-card"><i class="fas fa-info-circle" style="font-size:3rem;color:#f59e0b;"></i><h3>No Current Affairs Available</h3><p>There are no entries at the moment. Please check back later.</p></div>`;
+                    return;
+                }
+
+                count.textContent = affairs.length + ' Article' + (affairs.length !== 1 ? 's' : '');
+                count.style.display = 'inline-block';
+
+                // Build card shells (NO raw API html in the string)
+                let html = '';
+                affairs.forEach(affair => {
+                    const id          = affair.id || 0;
+                    const title       = affair.title || 'Current Affairs Update';
+                    const displayDate = formatDate(affair.date || affair.created_at);
+                    const youtubeUrl  = affair.youtube_url || null;
+                    const updatedAt   = affair.updated_at ? formatDate(affair.updated_at) : null;
+                    const updateInfo  = updatedAt ? `<small style="display:block;margin-top:8px;color:#6c757d;"><i class="fas fa-sync-alt"></i> Updated: ${updatedAt}</small>` : '';
+
+                    let youtubeHtml = '';
+                    if (youtubeUrl) {
+                        const embedUrl = getYouTubeEmbedUrl(youtubeUrl);
+                        youtubeHtml = embedUrl
+                            ? `<div class="affair-video-container"><iframe src="${embedUrl}" title="YouTube – ${escapeHtml(title)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`
+                            : `<a href="${youtubeUrl}" target="_blank" rel="noopener noreferrer" class="affair-youtube"><i class="fab fa-youtube"></i> Watch on YouTube</a>`;
+                    }
+
+                    html += `
+                        <div class="affair-card" data-affair-id="${id}">
+                            <div class="affair-date">
+                                <i class="far fa-calendar-alt"></i> ${displayDate}
+                                ${youtubeUrl ? '<span style="margin-left:8px;background:#ff0000;color:white;padding:2px 8px;border-radius:12px;font-size:0.7rem;"><i class="fab fa-youtube"></i> Video</span>' : ''}
+                            </div>
+                            <h4>${escapeHtml(title)}</h4>
+                            ${youtubeHtml}
+                            <div id="preview-${id}" class="affair-content-preview"></div>
+                            ${updateInfo}
+                            <div style="margin-top:15px;border-top:1px solid #e2e8f0;padding-top:12px;display:flex;align-items:center;flex-wrap:wrap;gap:10px;">
+                                <a href="current-affair-detail.html?id=${id}" class="btn-full-content">
+                                    <i class="fas fa-book-open"></i> Read Full Content
+                                </a>
+                                <a href="#" class="btn-download" onclick="alert('PDF download coming soon.'); return false;">
+                                    <i class="fas fa-download"></i> Download PDF
+                                </a>
+                                <button onclick="copyAffairLink(${id})" style="background:none;border:1px solid #cbd5e1;padding:6px 14px;border-radius:30px;cursor:pointer;font-size:0.85rem;">
+                                    <i class="fas fa-share-alt"></i> Share
+                                </button>
+                            </div>
+                        </div>`;
+                });
+
+                grid.innerHTML = html;
+
+                // Inject preview text safely after render
+                affairs.forEach(affair => {
+                    const id = affair.id || 0;
+                    const previewDiv = document.getElementById('preview-' + id);
+                    if (previewDiv) {
+                        const preview = getTextPreview(affair.content || '');
+                        previewDiv.innerHTML = `<p>${escapeHtml(preview)}</p>`;
+                    }
+                });
+
+            } catch (error) {
+                console.error('API Fetch Error:', error);
+                let msg = 'Unable to load current affairs.';
+                if (error.name === 'AbortError') msg = 'Request timed out. Check your connection and try again.';
+                else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) msg = 'Network error: Cannot reach the API server.';
+                else msg += ' ' + error.message;
+                grid.innerHTML = `<div class="error-card"><i class="fas fa-exclamation-triangle" style="font-size:3rem;color:#dc2626;"></i><h3>Unable to Fetch Live Data</h3><p>${escapeHtml(msg)}</p><button onclick="refreshAffairs()" style="margin-top:15px;background:#0a1f44;color:white;border:none;padding:10px 24px;border-radius:30px;cursor:pointer;"><i class="fas fa-sync-alt"></i> Retry</button></div>`;
+            }
+        }
+
+        window.refreshAffairs = fetchCurrentAffairs;
+        document.addEventListener('DOMContentLoaded', fetchCurrentAffairs);
+    </script>
+</body>
+</html>
