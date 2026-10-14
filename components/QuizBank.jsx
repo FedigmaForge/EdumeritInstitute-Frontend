@@ -64,6 +64,44 @@ function sectionsForSet(set) {
   }));
 }
 
+// Some Banking sets' questions were tagged with a specific banking topic
+// (e.g. "Monetary Banking", "Digital Payments") instead of the umbrella
+// "General Awareness" label that the "Banking and General Awareness" nav
+// link filters on (see Navbar.jsx). Rather than requiring every question to
+// be retagged, group these known banking topics under "General Awareness"
+// here so they all show up together on that filtered page. Add new banking
+// topic labels to this list as they show up in future sets.
+const CATEGORY_GROUPS = {
+  "general awareness": new Set(
+    [
+      "general awareness",
+      "banking solutions",
+      "monetary banking",
+      "banking regulation",
+      "digital payments",
+      "financial regulators",
+      "capital market & stock market",
+      "banking schemes",
+      "banking scheme",
+      "agricultural finance",
+      "financial sector",
+      "banking products",
+      "important indices",
+      "msme",
+      "banking appointments",
+      "banking appontments", // tolerate the typo'd tag on a few existing Set 18 questions until it's cleaned up in the DB
+    ].map((s) => s.toLowerCase())
+  ),
+};
+
+// The set of section-name strings (lowercased) that satisfy a given
+// ?category= value — just that one name for an ungrouped category (English,
+// Reasoning, …), or the whole group above for "General Awareness".
+function acceptedCategoryNames(categoryParam) {
+  const norm = categoryParam.trim().toLowerCase();
+  return CATEGORY_GROUPS[norm] || new Set([norm]);
+}
+
 function buildSets(allQuizzes) {
   const byId = new Map();
   allQuizzes.forEach((q) => {
@@ -216,25 +254,48 @@ export default function QuizBank() {
   // ?category=English (etc.) — only sets containing that subject are shown,
   // each card showing just that subject's name/count/allotted time. Starting
   // one of these cards runs ONLY that section, not the whole multi-subject set.
+  // For a grouped category (see CATEGORY_GROUPS above), a set can contribute
+  // more than one matching section (e.g. a Banking set with both "Banking
+  // Regulation" and "Monetary Banking" questions) — those are combined into
+  // one tile for that set, run back-to-back as their own sections.
   const filteredMatches = useMemo(() => {
     if (!categoryParam) return null;
-    const wantedNorm = categoryParam.toLowerCase();
+    const accepted = acceptedCategoryNames(categoryParam);
     const out = [];
     sets.forEach((set) => {
-      const section = sectionsForSet(set).find((s) => s.name.toLowerCase() === wantedNorm);
-      if (section) out.push({ set, section });
+      const matchingSections = sectionsForSet(set).filter((s) => accepted.has(s.name.toLowerCase()));
+      if (matchingSections.length === 0) return;
+      out.push({
+        set,
+        sections: matchingSections,
+        names: matchingSections.map((s) => s.name),
+        questionCount: matchingSections.reduce((n, s) => n + s.questions.length, 0),
+        seconds: matchingSections.reduce((n, s) => n + s.seconds, 0),
+      });
     });
     return out;
   }, [sets, categoryParam]);
 
-  const startRunner = (set, onlySubjectName) => {
+  const startRunner = (set, onlySubjectNames) => {
     let subs = sectionsForSet(set);
-    if (onlySubjectName) {
-      subs = subs.filter((s) => s.name.toLowerCase() === onlySubjectName.toLowerCase());
+    let scopeCategory = "";
+    if (onlySubjectNames && onlySubjectNames.length) {
+      const wanted = new Set(onlySubjectNames.map((n) => n.toLowerCase()));
+      subs = subs.filter((s) => wanted.has(s.name.toLowerCase()));
       if (subs.length === 0) return;
+      // Only scope the leaderboard/attempts by this category name (comparing
+      // across every set that shares it) when exactly one section matched
+      // AND it's literally the category the visitor asked for. When several
+      // differently-named banking sections got grouped under the "General
+      // Awareness" umbrella, there's no single shared category text to
+      // compare across sets, so fall back to comparing within this set only
+      // — the same scoping the full "Choose a Set" flow already uses.
+      if (onlySubjectNames.length === 1 && onlySubjectNames[0].toLowerCase() === categoryParam.toLowerCase()) {
+        scopeCategory = onlySubjectNames[0];
+      }
     }
     setRunnerSet(set);
-    setRunnerCategory(onlySubjectName || "");
+    setRunnerCategory(scopeCategory);
     setSubjects(subs);
     setSectionIndex(0);
     setAnswers({});
@@ -511,15 +572,15 @@ export default function QuizBank() {
 
         {loadStatus === "ready" && categoryParam && filteredMatches && filteredMatches.length > 0 && (
           <div className="qb-tile-grid">
-            {filteredMatches.map(({ set, section }) => (
+            {filteredMatches.map(({ set, names, questionCount, seconds }) => (
               <SetTile
                 key={set.id}
                 title={set.title}
-                questionCount={`${section.questions.length} question${section.questions.length === 1 ? "" : "s"}`}
+                questionCount={`${questionCount} question${questionCount === 1 ? "" : "s"}`}
                 durationLabel={
-                  section.seconds > 0 ? (
+                  seconds > 0 ? (
                     <span className="qb-tile-duration">
-                      <i className="fas fa-stopwatch"></i> {Math.round(section.seconds / 60)} min
+                      <i className="fas fa-stopwatch"></i> {Math.round(seconds / 60)} min
                     </span>
                   ) : (
                     <span className="qb-tile-duration untimed">
@@ -527,8 +588,8 @@ export default function QuizBank() {
                     </span>
                   )
                 }
-                subjectTags={[section.name]}
-                onStart={() => startRunner(set, section.name)}
+                subjectTags={names}
+                onStart={() => startRunner(set, names)}
               />
             ))}
           </div>

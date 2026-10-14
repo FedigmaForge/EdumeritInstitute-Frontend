@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { BLOG_POSTS } from "./blogPosts";
-import BlogCard from "./BlogCard";
+import BlogList from "./BlogList";
+import { loadPostsForBuild } from "./blogApi";
 
-export default function BlogSpotlight() {
-  if (BLOG_POSTS.length === 0) return null;
-  const posts = BLOG_POSTS.slice(0, 3);
+// Home page "From the Blog" — newest 3 published posts from the admin dashboard.
+export default async function BlogSpotlight() {
+  const posts = await loadPostsForBuild();
+  const builtSlugs = posts.map((p) => p.slug);
 
   return (
     <section className="blog-spotlight-section">
@@ -17,11 +18,7 @@ export default function BlogSpotlight() {
           <div className="divider"></div>
         </div>
 
-        <div className="blog-grid blog-grid-center">
-          {posts.map((post) => (
-            <BlogCard post={post} key={post.slug} />
-          ))}
-        </div>
+        <BlogList initialPosts={posts} builtSlugs={builtSlugs} limit={3} className="blog-grid blog-grid-center" />
 
         <div className="blog-spotlight-footer">
           <Link href="/blog" className="btn-outline">

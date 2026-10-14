@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { BLOG_POSTS } from "@/components/blogPosts";
-import BlogCard from "@/components/BlogCard";
+import BlogList from "@/components/BlogList";
+import { loadPostsForBuild } from "@/components/blogApi";
 
 export const metadata = {
   title: "Blog — Exam Notifications & Updates",
@@ -14,8 +14,29 @@ export const metadata = {
   },
 };
 
-export default function BlogPage() {
-  const posts = BLOG_POSTS;
+// Posts come from the admin dashboard (Blog). The build-time list renders first,
+// then BlogList refreshes it from the API so new posts appear without a rebuild.
+export default async function BlogPage() {
+  const posts = await loadPostsForBuild();
+  const builtSlugs = posts.map((p) => p.slug);
+  const emptyState = (
+          <div className="blog-empty">
+            <i className="fas fa-bullhorn" style={{ fontSize: "2.5rem", color: "var(--navy)", marginBottom: "1rem", display: "block" }}></i>
+            <h3 style={{ color: "var(--navy)", marginBottom: "0.75rem" }}>No Notifications Published Yet</h3>
+            <p>
+              We're setting this space up for real exam notifications, results and admit card alerts. In the
+              meantime, message us on WhatsApp and our team will share the latest updates directly.
+            </p>
+            <a
+              href="https://wa.me/919211278818?text=Hi%20EduMerit%20Institute,%20I%20want%20the%20latest%20exam%20notifications%20and%20updates"
+              target="_blank"
+              rel="noreferrer"
+              className="btn-accent"
+            >
+              <i className="fab fa-whatsapp"></i> Ask on WhatsApp
+            </a>
+          </div>
+  );
 
   return (
     <section className="blog-list-section blog-list-section-top">
@@ -35,30 +56,7 @@ export default function BlogPage() {
           <h1 style={{ fontSize: "2rem", margin: "0.6rem 0 0" }}>Blog</h1>
         </div>
 
-        {posts.length === 0 ? (
-          <div className="blog-empty">
-            <i className="fas fa-bullhorn" style={{ fontSize: "2.5rem", color: "var(--navy)", marginBottom: "1rem", display: "block" }}></i>
-            <h3 style={{ color: "var(--navy)", marginBottom: "0.75rem" }}>No Notifications Published Yet</h3>
-            <p>
-              We're setting this space up for real exam notifications, results and admit card alerts. In the
-              meantime, message us on WhatsApp and our team will share the latest updates directly.
-            </p>
-            <a
-              href="https://wa.me/919211278818?text=Hi%20EduMerit%20Institute,%20I%20want%20the%20latest%20exam%20notifications%20and%20updates"
-              target="_blank"
-              rel="noreferrer"
-              className="btn-accent"
-            >
-              <i className="fab fa-whatsapp"></i> Ask on WhatsApp
-            </a>
-          </div>
-        ) : (
-          <div className="blog-grid">
-            {posts.map((post) => (
-              <BlogCard post={post} key={post.slug} />
-            ))}
-          </div>
-        )}
+        <BlogList initialPosts={posts} builtSlugs={builtSlugs} empty={emptyState} />
       </div>
     </section>
   );

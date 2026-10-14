@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { getStudent, getToken, logout } from "./studentAuth";
 
 const NAV_ITEMS = [
   { href: "/", label: "Home" },
@@ -28,6 +29,7 @@ const NAV_ITEMS = [
       { href: "/current-affairs", label: "Monthly Current Affairs Quiz", icon: "fas fa-calendar-alt" },
     ],
   },
+  { href: "/mock-test", label: "Mock Test" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -40,6 +42,7 @@ const SEARCH_INDEX = [
   { href: "/daily-headlines", label: "Daily Headlines" },
   { href: "/blog", label: "Blog — Exam Notifications & Updates" },
   { href: "/quiz", label: "Quiz Bank" },
+  { href: "/mock-test", label: "Mock Tests — Bank & Insurance" },
   { href: "/contact", label: "Contact Us" },
   { href: "/privacy-policy", label: "Privacy Policy" },
 ];
@@ -52,6 +55,34 @@ export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const searchRef = useRef(null);
+  const [student, setStudent] = useState(null); // logged-in student (mock tests)
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef(null);
+
+  useEffect(() => {
+    const refresh = () => setStudent(getToken() ? getStudent() : null);
+    refresh();
+    window.addEventListener("edumerit-auth", refresh);
+    window.addEventListener("storage", refresh); // login/logout in another tab
+    return () => {
+      window.removeEventListener("edumerit-auth", refresh);
+      window.removeEventListener("storage", refresh);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!profileOpen) return;
+    const onClickOutside = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) setProfileOpen(false);
+    };
+    const onEscape = (e) => e.key === "Escape" && setProfileOpen(false);
+    document.addEventListener("mousedown", onClickOutside);
+    document.addEventListener("keydown", onEscape);
+    return () => {
+      document.removeEventListener("mousedown", onClickOutside);
+      document.removeEventListener("keydown", onEscape);
+    };
+  }, [profileOpen]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -64,6 +95,7 @@ export default function Navbar() {
     setOpenDropdown(null);
     setSearchOpen(false);
     setQuery("");
+    setProfileOpen(false);
   }, [pathname]);
 
   useEffect(() => {
@@ -90,7 +122,7 @@ export default function Navbar() {
       : [];
 
   const isActive = (item) => {
-    if (item.href) return pathname === item.href;
+    if (item.href) return pathname === item.href || pathname === `${item.href}/`;
     return item.dropdown?.some((d) => d.href === pathname);
   };
 
@@ -139,8 +171,8 @@ export default function Navbar() {
                 );
               }
               return (
-                <li key={item.href}>
-                  <Link href={item.href} className={pathname === item.href ? "active" : ""}>
+                <li key={item.key || item.href}>
+                  <Link href={item.href} className={isActive(item) ? "active" : ""}>
                     {item.label}
                   </Link>
                 </li>
@@ -162,7 +194,7 @@ export default function Navbar() {
                 <ul className="nav-search-results">
                   {results.length === 0 && <li className="nav-search-empty">No matches found.</li>}
                   {results.map((r) => (
-                    <li key={r.href}>
+                    <li key={r.label}>
                       <Link href={r.href}>{r.label}</Link>
                     </li>
                   ))}
@@ -178,6 +210,42 @@ export default function Navbar() {
             >
               Book Free Demo
             </a>
+
+            {student && (
+              <div className={`nav-profile${profileOpen ? " open" : ""}`} ref={profileRef}>
+                <button
+                  type="button"
+                  className="nav-profile-btn"
+                  onClick={() => setProfileOpen((v) => !v)}
+                  aria-label="My account"
+                  aria-expanded={profileOpen}
+                >
+                  <span className="nav-profile-avatar">
+                    {(student.name || student.email || "?").trim().charAt(0).toUpperCase()}
+                  </span>
+                  <span className="nav-profile-name">{student.name || student.email}</span>
+                  <i className="fas fa-chevron-down"></i>
+                </button>
+                {profileOpen && (
+                  <div className="nav-profile-menu">
+                    <div className="nav-profile-info">
+                      <strong>{student.name || "Student"}</strong>
+                      {student.email && <span>{student.email}</span>}
+                    </div>
+                    <Link href="/mock-test/"><i className="fas fa-file-pen"></i> Mock Tests</Link>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProfileOpen(false);
+                        logout();
+                      }}
+                    >
+                      <i className="fas fa-right-from-bracket"></i> Log out
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <button className="menu-toggle" id="menuToggle" onClick={() => setMenuOpen((v) => !v)}>

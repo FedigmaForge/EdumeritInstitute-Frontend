@@ -1,30 +1,21 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BLOG_POSTS, getBlogPost } from "@/components/blogPosts";
+import BlogPostView from "@/components/BlogPostView";
+import { loadPostsForBuild, loadPostForBuild } from "@/components/blogApi";
 
 const SITE_URL = "https://edumerits.in";
 
-function formatDate(dateString) {
-  if (!dateString) return "";
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return "";
-    return date.toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" });
-  } catch {
-    return "";
-  }
-}
-
-export function generateStaticParams() {
-  return BLOG_POSTS.map((post) => ({ slug: post.slug }));
+// One page per published post (from the admin dashboard → Blog) at build time.
+// The page loads the live post from the API in the browser, so edits show without a rebuild.
+// Posts published after the last build open via /blog/view/ (firebase.json rewrite) until the next build.
+// NOTE: don't add `dynamicParams = false` — it breaks `next dev` with output: "export".
+export async function generateStaticParams() {
+  const posts = await loadPostsForBuild();
+  return posts.map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({ params }) {
-  const post = getBlogPost(params.slug);
-  if (!post) {
-    return { title: "Blog Post Not Found" };
-  }
-
+  const post = await loadPostForBuild(params.slug);
+  if (!post) return { title: "Blog Post Not Found" };
   return {
     title: post.title,
     description: post.excerpt,
@@ -39,16 +30,8 @@ export async function generateMetadata({ params }) {
   };
 }
 
-function readingTime(post) {
-  const words = post.content
-    .map((b) => (b.type === "list" ? b.items.join(" ") : b.text))
-    .join(" ")
-    .split(/\s+/).length;
-  return Math.max(2, Math.round(words / 200));
-}
-
-export default function BlogPostPage({ params }) {
-  const post = getBlogPost(params.slug);
+export default async function BlogPostPage({ params }) {
+  const post = await loadPostForBuild(params.slug);
   if (!post) notFound();
 
   const jsonLd = {
@@ -56,7 +39,7 @@ export default function BlogPostPage({ params }) {
     "@type": "Article",
     headline: post.title,
     datePublished: post.date,
-    dateModified: post.date,
+    dateModified: post.updatedAt || post.date,
     author: { "@type": "Organization", name: "EduMerit Institute" },
     publisher: {
       "@type": "Organization",
@@ -70,61 +53,7 @@ export default function BlogPostPage({ params }) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-
-      <article className="blog-post-page">
-        <div className="container">
-          <div className="blog-post-wrap">
-            <Link href="/blog" className="detail-back-btn">
-              <i className="fas fa-arrow-left"></i> Back to Blog
-            </Link>
-
-            <header className="blog-post-header">
-              <span className="blog-card-category">{post.category}</span>
-              <h1>{post.title}</h1>
-              <div className="blog-post-meta">
-                <span>
-                  <i className="far fa-calendar-alt"></i> {formatDate(post.date)}
-                </span>
-                <span>
-                  <i className="far fa-clock"></i> {readingTime(post)} min read
-                </span>
-                <span>
-                  <i className="fas fa-building"></i> EduMerit Institute
-                </span>
-              </div>
-            </header>
-
-            <div className="blog-post-body">
-              {post.content.map((block, i) => {
-                if (block.type === "heading") return <h2 key={i}>{block.text}</h2>;
-                if (block.type === "list")
-                  return (
-                    <ul key={i}>
-                      {block.items.map((item, j) => (
-                        <li key={j}>{item}</li>
-                      ))}
-                    </ul>
-                  );
-                return <p key={i}>{block.text}</p>;
-              })}
-            </div>
-
-            <div className="blog-post-footer">
-              <Link href="/blog" className="detail-back-btn">
-                <i className="fas fa-arrow-left"></i> Back to Blog
-              </Link>
-              <a
-                href="https://wa.me/919211278818?text=Hi%20EduMerit%20Institute,%20I%20have%20a%20question%20about%20this%20update"
-                target="_blank"
-                rel="noreferrer"
-                className="btn-accent"
-              >
-                <i className="fab fa-whatsapp"></i> Ask a Question
-              </a>
-            </div>
-          </div>
-        </div>
-      </article>
+      <BlogPostView slug={params.slug} initialPost={post} />
     </>
   );
 }

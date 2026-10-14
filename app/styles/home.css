@@ -1433,3 +1433,26 @@
     .ca-video-card { flex: 0 0 200px; }
     .success-stories-grid { grid-template-columns: repeat(2, 1fr); max-width: 420px; }
 }
+
+/* Logged-in student menu (navbar) */
+.nav-profile { position: relative; }
+.nav-profile-btn { display: flex; align-items: center; gap: 0.5rem; border: 1px solid var(--border); background: var(--white); border-radius: 30px; padding: 4px 12px 4px 4px; font-family: inherit; font-size: 0.9rem; font-weight: 600; color: var(--text-dark); cursor: pointer; transition: border-color 0.15s; }
+.nav-profile-btn:hover, .nav-profile.open .nav-profile-btn { border-color: var(--navy-light); }
+.nav-profile-btn > i { font-size: 0.7rem; color: var(--text-gray); transition: transform 0.15s; }
+.nav-profile.open .nav-profile-btn > i { transform: rotate(180deg); }
+.nav-profile-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--navy); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; flex: none; }
+.nav-profile-name { max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav-profile-menu { position: absolute; right: 0; top: calc(100% + 8px); min-width: 220px; background: var(--white); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 10px 30px rgba(10,31,68,0.15); padding: 6px; z-index: 1001; display: flex; flex-direction: column; }
+.nav-profile-info { padding: 10px 12px; border-bottom: 1px solid var(--border); margin-bottom: 4px; display: flex; flex-direction: column; min-width: 0; }
+.nav-profile-info strong { color: var(--navy); }
+.nav-profile-info span { font-size: 0.8rem; color: var(--text-gray); overflow: hidden; text-overflow: ellipsis; }
+.nav-profile-menu a, .nav-profile-menu button { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; border: none; background: none; font-family: inherit; font-size: 0.9rem; color: var(--text-dark); text-decoration: none; cursor: pointer; text-align: left; }
+.nav-profile-menu a:hover, .nav-profile-menu button:hover { background: var(--light-gray); color: var(--navy); }
+.nav-profile-menu i { width: 16px; text-align: center; color: var(--navy-light); }
+.nav-profile-menu button { color: #c62828; }
+.nav-profile-menu button i { color: #c62828; }
+
+@media (max-width: 768px) {
+    .nav-profile-name, .nav-profile-btn > i { display: none; }
+    .nav-profile-btn { padding: 2px; }
+}

@@ -1,6 +1,31 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+
+const EXAMS_API = "https://api.edumerits.in/api/admin/exams";
+const IMAGE_BASE = "https://api.edumerits.in";
+const EXAM_ORDER = ["IBPS PO", "SBI PO", "IBPS and SBI Clerk", "NICL"];
+const TYPE_ORDER = ["Preliminary Examination", "Main Examination", "Preliminary & Main"];
+
+// The site is a static export, so the exam list baked in at build time goes stale
+// (re-uploaded cover photos get new filenames and the old ones 404). We refetch
+// the live list in the browser and only use the build-time data as a first paint.
+async function fetchLiveExams(signal) {
+  const res = await fetch(`${EXAMS_API}?t=${Date.now()}`, { signal, cache: "no-store" });
+  if (!res.ok) return null;
+  const data = await res.json();
+  if (!data?.success || !Array.isArray(data.exams)) return null;
+  return [...data.exams]
+    .sort((a, b) => {
+      const examDiff = EXAM_ORDER.indexOf(a.examName) - EXAM_ORDER.indexOf(b.examName);
+      if (examDiff !== 0) return examDiff;
+      return TYPE_ORDER.indexOf(a.examType) - TYPE_ORDER.indexOf(b.examType);
+    })
+    .map((exam) => ({
+      ...exam,
+      imageUrl: exam.coverPhoto ? `${IMAGE_BASE}${exam.coverPhoto}` : null,
+    }));
+}
 
 const ENROLL_URL = "https://courses.edumerits.in/";
 
@@ -9,7 +34,7 @@ function ExamCard({ exam }) {
     <div className="exam-card">
       <div className="exam-card-poster">
         <img
-          src={exam.imageUrl}
+          src={exam.imageUrl || undefined}
           alt={`${exam.examName} — ${exam.examType}`}
           loading="lazy"
           onError={(e) => {
@@ -35,7 +60,19 @@ function ExamCard({ exam }) {
   );
 }
 
-export default function ExamCardScroller({ exams }) {
+export default function ExamCardScroller({ exams: initialExams }) {
+  const [exams, setExams] = useState(initialExams);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchLiveExams(controller.signal)
+      .then((live) => {
+        if (live && live.length > 0) setExams(live);
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, []);
+
   const trackRef = useRef(null);
   const autoScrollRef = useRef(null);
   const pausedRef = useRef(false);
@@ -88,7 +125,7 @@ export default function ExamCardScroller({ exams }) {
         onTouchEnd={resume}
       >
         {exams.map((exam) => (
-          <ExamCard exam={exam} key={exam.id} />
+          <ExamCard exam={exam} key={`${exam.id}-${exam.imageUrl}`} />
         ))}
       </div>
       <button

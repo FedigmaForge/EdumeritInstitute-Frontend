@@ -2,6 +2,7 @@ import "./styles/style.css";
 import "./styles/pages.css";
 import "./styles/contact.css";
 import "./styles/home.css";
+import "./styles/mock-test.css";
 import "aos/dist/aos.css";
 import Script from "next/script";
 import Navbar from "@/components/Navbar";

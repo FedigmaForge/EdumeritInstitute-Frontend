@@ -1,4 +1,5 @@
-import { BLOG_POSTS } from "@/components/blogPosts";
+import { loadPostsForBuild } from "@/components/blogApi";
+import { fetchAllSeriesParams } from "@/components/mockTestApi";
 
 const SITE_URL = "https://edumerits.in";
 
@@ -10,6 +11,7 @@ const STATIC_ROUTES = [
   { path: "/current-affairs", priority: 0.9, changeFrequency: "daily" },
   { path: "/daily-headlines", priority: 0.8, changeFrequency: "daily" },
   { path: "/blog", priority: 0.9, changeFrequency: "daily" },
+  { path: "/mock-test", priority: 0.8, changeFrequency: "weekly" },
   { path: "/quiz", priority: 0.7, changeFrequency: "weekly" },
   { path: "/contact", priority: 0.6, changeFrequency: "monthly" },
   { path: "/privacy-policy", priority: 0.3, changeFrequency: "yearly" },
@@ -45,12 +47,21 @@ export default async function sitemap() {
 
   const affairEntries = await getCurrentAffairEntries();
 
-  const blogEntries = BLOG_POSTS.map((post) => ({
+  // Published posts from the admin dashboard (Blog)
+  const blogEntries = (await loadPostsForBuild()).map((post) => ({
     url: `${SITE_URL}/blog/${post.slug}`,
     lastModified: post.date,
     changeFrequency: "monthly",
     priority: 0.6,
   }));
 
-  return [...staticEntries, ...affairEntries, ...blogEntries];
+  // Admin-managed exam pages (Main Mock Test) + static catalogue
+  const mockTestEntries = (await fetchAllSeriesParams()).map((c) => ({
+    url: `${SITE_URL}/mock-test/${c.section}/${c.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly",
+    priority: 0.6,
+  }));
+
+  return [...staticEntries, ...affairEntries, ...blogEntries, ...mockTestEntries];
 }
